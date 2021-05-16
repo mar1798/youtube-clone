@@ -1,4 +1,4 @@
-import React, {SyntheticEvent, useMemo, useState} from 'react'
+import React, {SyntheticEvent, useEffect, useMemo, useState} from 'react'
 import {GoogleLogin} from 'react-google-login';
 import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
 
@@ -30,8 +30,14 @@ import Brightness4Icon from '@material-ui/icons/Brightness4';
 import TranslateIcon from '@material-ui/icons/Translate';
 import LiveTvIcon from '@material-ui/icons/LiveTv';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import {useActions} from "../hooks/useActions";
+import {useHistory} from "react-router-dom";
+import {useTypedSelector} from "../hooks/useTypedSelector";
 
 
+interface NavbarProps {
+    onSideBarOpen(sideOpen: boolean): void
+}
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,8 +45,11 @@ const useStyles = makeStyles((theme: Theme) =>
         grow: {
             position: 'relative',
             zIndex: 2,
-            marginBottom: '20px',
             flexGrow: 1,
+            opacity: 0.95,
+            '& .MuiPaper-elevation4': {
+                boxShadow: 'none'
+            }
         },
 
         menuButton: {
@@ -175,6 +184,11 @@ const useStyles = makeStyles((theme: Theme) =>
             position: 'absolute',
             top: 0,
             left: 0,
+        },
+        logo: {
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer'
         }
     })
 );
@@ -185,64 +199,46 @@ const optionsLanguage = [
 ];
 
 const optionsCurrentTheme = [
-    'Светлая',
     'Темная',
+    'Светлая',
 ];
 
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
 
+    const history = useHistory()
+    const {theme, language} = useTypedSelector(state => state.auth)
+    const {changeTheme, changeLanguage} = useActions()
     const classes = useStyles();
-
     const {transcript} = useSpeechRecognition()
 
-    const [language, setLanguage] = useState<string>('Русский')
-    const [currentTheme, setCurrentTheme] = useState<string>('Светлая')
+
     const [search, setSearch] = useState<string>('')
+    const [sideBarOpen, setSideBarOpen] = useState<boolean>(false);
+
     const [anchorElView, setAnchorElView] = useState<null | HTMLElement>(null);
     const [anchorElSettings, setAnchorElSettings] = useState<null | HTMLElement>(null);
-
     const [anchorCurrentTheme, setAnchorCurrentTheme] = useState<null | HTMLElement>(null);
     const [anchorLanguage, setAnchorLanguage] = useState<null | HTMLElement>(null);
-    const [languageIndex, setLanguageIndex] = useState<number>(0);
-    const [currentThemeIndex, setCurrentThemeIndex] = useState<number>(0);
-
-    useMemo(()=>{
-        if(currentThemeIndex === 1) {
-            setCurrentTheme('Темная')
-        } else {
-            setCurrentTheme('Светлая')
-        }
-    },[currentThemeIndex])
-
-    useMemo(()=>{
-        if(languageIndex === 1) {
-            setLanguage('Английский')
-        } else {
-            setLanguage('Русский')
-        }
-    },[languageIndex])
-
 
 
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value)
     }
     const handleMenuCurrentThemeClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
-        setCurrentThemeIndex(index);
+        changeTheme(index)
         setAnchorCurrentTheme(null);
     };
 
     const handleMenuLanguageClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
-        setLanguageIndex(index);
+        changeLanguage(index)
         setAnchorLanguage(null);
     };
 
 
-
     const submitHandler = (e: SyntheticEvent) => {
         e.preventDefault();
-        console.log(search)
+        history.push('/search')
     }
 
 
@@ -253,7 +249,13 @@ export const Navbar: React.FC = () => {
     useMemo(() => {
         setSearch(transcript)
     }, [transcript])
+    useMemo(() => {
+        onSideBarOpen(sideBarOpen)
+    }, [sideBarOpen, onSideBarOpen])
 
+    const sideBarOpenHandler = () => {
+        setSideBarOpen(!sideBarOpen)
+    }
 
     const viewMenu = (
         <StyledMenu
@@ -313,47 +315,48 @@ export const Navbar: React.FC = () => {
             open={Boolean(anchorElSettings)}
             onClose={() => setAnchorElSettings(null)}
         >
-            <StyledMenuItem onClick={(event: React.MouseEvent<HTMLElement>)=>setAnchorCurrentTheme(event.currentTarget)}>
+            <StyledMenuItem
+                onClick={(event: React.MouseEvent<HTMLElement>) => setAnchorCurrentTheme(event.currentTarget)}>
                 <ListItemIcon>
                     <Brightness4Icon fontSize="small"/>
                 </ListItemIcon>
-                <Typography>Тема: {currentTheme}</Typography>
-                <ArrowForwardIosIcon className={classes.arrowIcon}  />
+                <Typography>Тема: {theme ? 'Светлая' : 'Темная'}</Typography>
+                <ArrowForwardIosIcon className={classes.arrowIcon}/>
             </StyledMenuItem>
             <StyledMenu
                 anchorEl={anchorCurrentTheme}
                 keepMounted
                 open={Boolean(anchorCurrentTheme)}
-                onClose={()=>setAnchorCurrentTheme(null)}
+                onClose={() => setAnchorCurrentTheme(null)}
                 className={classes.submenu}
             >
                 {optionsCurrentTheme.map((option, index) => (
                     <StyledMenuItem
                         key={option}
-                        selected={index === currentThemeIndex}
+                        selected={index === theme}
                         onClick={(event: React.MouseEvent<HTMLElement>) => handleMenuCurrentThemeClick(event, index)}
                     >
                         {option}
                     </StyledMenuItem>
                 ))}
             </StyledMenu>
-            <StyledMenuItem onClick={(event: React.MouseEvent<HTMLElement>)=>setAnchorLanguage(event.currentTarget)}>
+            <StyledMenuItem onClick={(event: React.MouseEvent<HTMLElement>) => setAnchorLanguage(event.currentTarget)}>
                 <ListItemIcon>
                     <TranslateIcon fontSize="small"/>
                 </ListItemIcon>
-                <Typography>Язык: {language}</Typography>
-                <ArrowForwardIosIcon className={classes.arrowIcon}  />
+                <Typography>Язык: {language ? 'Английский' : 'Русский'}</Typography>
+                <ArrowForwardIosIcon className={classes.arrowIcon}/>
             </StyledMenuItem>
             <StyledMenu
                 anchorEl={anchorLanguage}
                 keepMounted
                 open={Boolean(anchorLanguage)}
-                onClose={()=>setAnchorLanguage(null)}
+                onClose={() => setAnchorLanguage(null)}
             >
                 {optionsLanguage.map((option, index) => (
                     <StyledMenuItem
                         key={option}
-                        selected={index === languageIndex}
+                        selected={index === language}
                         onClick={(event: React.MouseEvent<HTMLElement>) => handleMenuLanguageClick(event, index)}
                     >
                         {option}
@@ -366,20 +369,23 @@ export const Navbar: React.FC = () => {
 
     return (
         <div className={classes.grow}>
-            <AppBar position="static" color="inherit">
+            <AppBar position="fixed" color="inherit">
                 <Toolbar>
                     <IconButton
                         edge="start"
                         className={classes.menuButton}
                         color="inherit"
                         aria-label="open drawer"
+                        onClick={sideBarOpenHandler}
                     >
                         <MenuIcon/>
                     </IconButton>
-                    <YouTubeIcon fontSize="large" className={classes.youtubeIcon}/>
-                    <Typography className={classes.title} variant="h6" noWrap>
-                        YouTube
-                    </Typography>
+                    <div className={classes.logo} onClick={()=>history.push('/')}>
+                        <YouTubeIcon fontSize="large" className={classes.youtubeIcon}/>
+                        <Typography className={classes.title} variant="h6" noWrap>
+                            YouTube
+                        </Typography>
+                    </div>
                     <Paper elevation={0} component="form" className={classes.root}>
                         <InputBase
                             className={classes.input}

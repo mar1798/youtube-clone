@@ -1,29 +1,29 @@
-import React from 'react';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import React, { useMemo } from 'react';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {MainPage} from "./pages/MainPage";
+import {useTypedSelector} from "./hooks/useTypedSelector";
+import {Routes} from "./routes";
 
 
 function App() {
-    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: light)');
 
+    const {theme} = useTypedSelector(state => state.auth)
 
-    const theme = React.useMemo(
+    const mainTheme = useMemo(
         () =>
             createMuiTheme({
                 palette: {
-                    type: prefersDarkMode ? 'dark' : 'light',
+                    type: theme ? 'light' : 'dark',
                 },
             }),
-        [prefersDarkMode],
+        [theme],
     );
 
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={mainTheme}>
             <CssBaseline/>
-            <MainPage/>
+            <Routes />
 
 
         </ThemeProvider>

@@ -1,4 +1,5 @@
 import React from 'react';
+import {useHistory} from 'react-router-dom'
 import clsx from 'clsx';
 import {Drawer, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
@@ -15,6 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
             width: drawerWidth,
             flexShrink: 0,
             whiteSpace: 'nowrap',
+
         },
         drawerOpen: {
             width: drawerWidth,
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
             }),
             marginTop: 63,
             paddingLeft:8,
+            border: 'none'
         },
         drawerClose: {
             transition: theme.transitions.create('width', {
@@ -35,20 +38,28 @@ const useStyles = makeStyles((theme: Theme) =>
                 width: theme.spacing(9) + 1,
                 marginTop: 63,
                 paddingLeft:8,
+                border: 'none'
             },
         },
+        listItem: {
+            cursor: 'pointer'
+        }
     }),
 );
 
+interface SidebarProps {
+    open: boolean
+}
 
-export const SideBar: React.FC = () => {
+export const SideBar: React.FC<SidebarProps> = ({open}) => {
+
+
+    const history = useHistory();
     const classes = useStyles();
-    const [open, setOpen] = React.useState<boolean>(false);
 
 
     return (
             <Drawer
-                onClick={() => setOpen(!open)}
                 variant="permanent"
                 className={clsx(classes.drawer, {
                     [classes.drawerOpen]: open,
@@ -63,16 +74,18 @@ export const SideBar: React.FC = () => {
             >
 
                 <List>
-                    <ListItem>
-                        <ListItemIcon><HomeIcon/></ListItemIcon>
+                    <ListItem onClick={()=>history.push('/')} className={classes.listItem}>
+                        <ListItemIcon>
+                            <HomeIcon/>
+                        </ListItemIcon>
                         <ListItemText primary={'Главная'}/>
                     </ListItem>
-                    <ListItem>
+                    <ListItem className={classes.listItem}>
                         <ListItemIcon><ExploreIcon/></ListItemIcon>
                         <ListItemText primary={'Навигатор'}/>
                     </ListItem>
 
-                    <ListItem>
+                    <ListItem className={classes.listItem}>
                         <ListItemIcon><RestoreIcon/></ListItemIcon>
                         <ListItemText primary={'История'}/>
                     </ListItem>
