@@ -1,0 +1,7 @@
+
+{
+  "port": 5000,
+  "jwtSecret": "anvaryoutube",
+  "mongoUri": "mongodb+srv://anvar:1234@ytclaster.izwvz.mongodb.app/myFirstDatabase?retryWrites=true&w=majority",
+  "baseUrl": "http://localhost:5000"
+}

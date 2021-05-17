@@ -1,4 +1,4 @@
-import React, {SyntheticEvent, useEffect, useMemo, useState} from 'react'
+import React, {SyntheticEvent, useMemo, useState} from 'react'
 import {GoogleLogin} from 'react-google-login';
 import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
 
@@ -238,7 +238,7 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
 
     const submitHandler = (e: SyntheticEvent) => {
         e.preventDefault();
-        history.push('/search')
+        history.push(`/search/${search}`)
     }
 
 

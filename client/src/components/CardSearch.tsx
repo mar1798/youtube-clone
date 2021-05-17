@@ -12,8 +12,8 @@ import {red} from "@material-ui/core/colors";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
+            marginTop: '20px',
             display: "flex",
-            width: '80%',
             backgroundColor: theme.palette.background.default,
             '&.MuiPaper-elevation1':{
                 boxShadow: 'none',
@@ -21,8 +21,9 @@ const useStyles = makeStyles((theme: Theme) =>
             '& .MuiCardHeader-root': {
                 padding: 0,
             },
-            height: 200,
-            marginBottom: 20
+            maxHeight: 200,
+            height: '100%',
+            marginBottom: 20,
         },
         details: {
             display: "flex",
@@ -33,21 +34,23 @@ const useStyles = makeStyles((theme: Theme) =>
             height: '100%',
         },
         cover: {
-            minWidth: 360
+            maxWidth: '360px',
+            width: '100%',
+            flexShrink: 0,
+
         },
         controls: {
             display: "flex",
             alignItems: "center",
-            paddingBottom: theme.spacing(1)
-        },
-        playIcon: {
-            height: 38,
-            width: 38
+            paddingBottom: theme.spacing(1),
         },
         avatar: {
             backgroundColor: red[500],
             marginRight: 10,
         },
+        description: {
+            width: '80%'
+        }
     })
 );
 
@@ -77,7 +80,7 @@ export const CardSearch: React.FC = () => {
                             Анвар
                         </Typography>
                     </div>
-                    <Typography variant="body2" noWrap={true} display={"inline"} color="textSecondary"  component="p">
+                    <Typography variant="body2" noWrap={true} className={classes.description} color="textSecondary"  component="p">
                         This impressive paella is a perfect party dish and a fun meal to
                         cook together with your guests. Add 1 cup of frozen peas along with
                         the mussels, if you like.

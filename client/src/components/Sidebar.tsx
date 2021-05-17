@@ -16,24 +16,19 @@ const useStyles = makeStyles((theme: Theme) =>
             width: drawerWidth,
             flexShrink: 0,
             whiteSpace: 'nowrap',
+            marginTop: 63,
 
         },
         drawerOpen: {
             width: drawerWidth,
-            transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
+
             marginTop: 63,
             paddingLeft:8,
             border: 'none'
         },
         drawerClose: {
-            transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
             overflowX: 'hidden',
+            marginTop: 63,
             [theme.breakpoints.up('sm')]: {
                 width: theme.spacing(9) + 1,
                 marginTop: 63,

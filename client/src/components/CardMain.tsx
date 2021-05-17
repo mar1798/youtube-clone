@@ -1,6 +1,6 @@
 import React from "react";
 import {makeStyles, Theme, createStyles} from "@material-ui/core/styles";
-import {Card , CardHeader, CardMedia, CardContent, Avatar, Typography } from "@material-ui/core";
+import {Card, CardHeader, CardMedia, CardContent, Avatar, Typography} from "@material-ui/core";
 import {red} from "@material-ui/core/colors";
 
 
@@ -8,9 +8,9 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             width: '100%',
-            margin: '10px',
+            margin: '20px',
             backgroundColor: theme.palette.background.default,
-            '&.MuiPaper-elevation1':{
+            '&.MuiPaper-elevation1': {
                 boxShadow: 'none'
             }
         },
@@ -30,33 +30,67 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+interface ICardMain {
+    title: string,
+    description: string,
+    time: string,
+    img: string,
+    avatar: string
+}
 
-export const CardMain:React.FC = () => {
+
+export const CardMain: React.FC<ICardMain> = ({title, description, time, img, avatar}) => {
 
     const classes = useStyles();
+    const currentTime: any = new Date();
+    const alo: any = new Date(time)
+    const min = Math.floor((Math.abs(alo - currentTime) / 1000) / 60);
+    const takeTime = (): string => {
+        if (min > 59) {
+            const hour = Math.floor(min / 60)
+            if (hour > 24) {
+                const day = Math.floor(hour / 24)
+                if (day > 30) {
+                    const month = Math.floor(day / 30)
+                    if (month > 12) {
+                        const years = Math.floor(month / 12)
+                        return `${years} years ago`
+                    } else {
+                        return `${month} month ago`
+                    }
+                } else {
+                    return `${day} day ago`
+                }
+            } else {
+                return `${hour} ago`
+            }
+
+        } else {
+            return `${min} minutes ago`
+        }
+    }
+
 
     return (
         <Card className={classes.root}>
             <CardMedia
                 className={classes.media}
-                image="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
-                title="Paella dish"
+                image={img}
             />
             <CardContent>
                 <Typography className={classes.headText} component="p">
-                    This impressive paella is a perfect party dish and a fun meal to cook
-                    together with your guests. Add 1 cup of frozen peas along with the
-                    mussels, if you like.
+                    {description}
                 </Typography>
                 <CardHeader
                     avatar={
                         <Avatar aria-label="recipe" className={classes.avatar}>
-                            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
-                                 width='50' height="50" alt=""/>
+                            <img
+                                src={avatar}
+                                width='50' height="50" alt=""/>
                         </Avatar>
                     }
-                    title="Shrimp and Chorizo Paella"
-                    subheader="September 14 &bull; 2016"
+                    title={title}
+                    subheader={takeTime()}
                 />
             </CardContent>
         </Card>

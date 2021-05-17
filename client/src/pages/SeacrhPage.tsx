@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
+import {Link} from "react-router-dom";
 import {Navbar} from "../components/Navbar";
 import {SideBar} from "../components/Sidebar";
-import {Container} from "@material-ui/core";
+import {Container, Divider} from "@material-ui/core";
 import {CardSearch} from "../components/CardSearch";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import clsx from "clsx";
@@ -11,15 +12,15 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             height: 200,
-            marginRight: '40px',
 
         },
         drawerOpen: {
             marginTop: '100px',
+            marginLeft: '300px'
         },
         drawerClose: {
             marginTop: '37px',
-            marginLeft: '250px',
+
         }
     }),
 );
@@ -48,9 +49,10 @@ export const SearchPage: React.FC = () => {
                 [classes.drawerClose]: !open,
             })} maxWidth={"lg"}
             >
-                <CardSearch />
-                <CardSearch />
-                <CardSearch />
+                <Divider />
+               <Link to={`/video/123`}> <CardSearch /> </Link>
+               <Link to={`/video/123`}> <CardSearch /> </Link>
+               <Link to={`/video/123`}> <CardSearch /> </Link>
             </Container>
 
         </>

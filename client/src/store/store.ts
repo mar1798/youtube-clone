@@ -1,6 +1,7 @@
 import {applyMiddleware, createStore, combineReducers, compose} from "redux";
 import thunk from "redux-thunk";
 import {authReducer} from "./reducers/authReducer";
+import {videoReducer} from "./reducers/videoReducer";
 
 declare global {
     interface Window {
@@ -11,7 +12,8 @@ declare global {
 const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
 const rootReducer = combineReducers({
-    auth: authReducer
+    auth: authReducer,
+    video: videoReducer
 })
 
 export type RootState = ReturnType<typeof rootReducer>

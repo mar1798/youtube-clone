@@ -1,11 +1,13 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Navbar} from "../components/Navbar";
 import {SideBar} from "../components/Sidebar";
 import {useTypedSelector} from "../hooks/useTypedSelector";
 import {CardMain} from "../components/CardMain";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
-import {Container} from "@material-ui/core";
+import {Container, LinearProgress} from "@material-ui/core";
 import clsx from "clsx";
+import {Link} from "react-router-dom";
+import {useActions} from "../hooks/useActions";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -19,36 +21,36 @@ const useStyles = makeStyles((theme: Theme) =>
         drawerOpen: {
             marginTop: '100px',
             maxWidth: 1350,
-            marginLeft: '280px',
-            transition: theme.transitions.create('margin, max-width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
+            marginLeft: '250px',
+
         },
         drawerClose: {
             marginTop: '37px',
-            marginLeft: '100px',
+
             maxWidth: 1500,
-            transition: theme.transitions.create('margin, max-width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
+
         }
     }),
 );
 
 
-
 export const MainPage: React.FC = () => {
     const classes = useStyles()
+    const {getVideoFetch} = useActions()
+    const {loading, videos, channelImgs} = useTypedSelector(state => state.video)
     const [open, setOpen] = useState<boolean>(false)
 
     const onSideBarOpen = (open: boolean) => {
         setOpen(open)
     }
 
-    const auth = useTypedSelector(state => state.auth)
-    console.log(auth)
+    // const auth = useTypedSelector(state => state.auth)
+
+    useEffect(() => {
+        getVideoFetch()
+    }, [])
+
+
 
     return (
         <>
@@ -60,13 +62,20 @@ export const MainPage: React.FC = () => {
                 [classes.drawerClose]: !open,
             })} maxWidth={false}
             >
-                <CardMain/>
-                <CardMain/>
-                <CardMain/>
-                <CardMain/>
+                {!videos && loading && <LinearProgress/>}
+
+                {videos && videos.map((video, index)=>
+                    <Link key={video.id.videoId} to={`/video/${video.id.videoId}`}>
+                        <CardMain
+                            title={video.snippet.channelTitle}
+                            description={video.snippet.title}
+                            time={video.snippet.publishTime}
+                            img={video.snippet.thumbnails.medium.url}
+                            avatar={channelImgs[index]}
+                        />
+                    </Link>
+                )}
             </Container>
-
-
 
         </>
 
