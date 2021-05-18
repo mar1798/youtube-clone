@@ -2,6 +2,10 @@
   text-decoration: none;
 }
 
+#player .ytp-expand-pause-overlay .ytp-scroll-min .ytp-expand-pause-overlay {
+  display: none;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

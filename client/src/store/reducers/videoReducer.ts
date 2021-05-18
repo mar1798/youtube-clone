@@ -5,6 +5,8 @@ const initialState: videoState = {
     videos: [],
     error: null,
     channelImgs: [],
+    selectVideo: {},
+    channelData: {}
 }
 
 export const videoReducer = (state = initialState, action: VideoAction):videoState => {
@@ -19,7 +21,10 @@ export const videoReducer = (state = initialState, action: VideoAction):videoSta
             return {...state, channelImgs: [...state.channelImgs, action.payload ]}
         case videoActionTypes.DELETE_CHANNEL_IMG:
             return {...state, channelImgs: []}
-
+        case videoActionTypes.GET_SELECTED_VIDEO:
+            return {...state, selectVideo: action.payload, loading: false}
+        case videoActionTypes.GET_CHANNEL_DATA:
+            return {...state, channelData: action.payload, loading: false}
         default:
             return {...state}
     }

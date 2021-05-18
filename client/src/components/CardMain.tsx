@@ -1,7 +1,7 @@
 import React from "react";
 import {makeStyles, Theme, createStyles} from "@material-ui/core/styles";
 import {Card, CardHeader, CardMedia, CardContent, Avatar, Typography} from "@material-ui/core";
-import {red} from "@material-ui/core/colors";
+
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -18,9 +18,6 @@ const useStyles = makeStyles((theme: Theme) =>
             height: 0,
             paddingTop: "56.25%" // 16:9
         },
-        avatar: {
-            backgroundColor: red[500]
-        },
         headText: {
             color: theme.palette.text.primary,
             fontSize: 20,
@@ -31,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface ICardMain {
-    title: string,
+    channelTitle: string,
     description: string,
     time: string,
     img: string,
@@ -39,12 +36,12 @@ interface ICardMain {
 }
 
 
-export const CardMain: React.FC<ICardMain> = ({title, description, time, img, avatar}) => {
+export const CardMain: React.FC<ICardMain> = ({channelTitle, description, time, img, avatar}) => {
 
     const classes = useStyles();
     const currentTime: any = new Date();
-    const alo: any = new Date(time)
-    const min = Math.floor((Math.abs(alo - currentTime) / 1000) / 60);
+    const tookTime: any = new Date(time)
+    const min = Math.floor((Math.abs(tookTime - currentTime) / 1000) / 60);
     const takeTime = (): string => {
         if (min > 59) {
             const hour = Math.floor(min / 60)
@@ -83,13 +80,13 @@ export const CardMain: React.FC<ICardMain> = ({title, description, time, img, av
                 </Typography>
                 <CardHeader
                     avatar={
-                        <Avatar aria-label="recipe" className={classes.avatar}>
+                        <Avatar aria-label="recipe" >
                             <img
                                 src={avatar}
                                 width='50' height="50" alt=""/>
                         </Avatar>
                     }
-                    title={title}
+                    title={channelTitle}
                     subheader={takeTime()}
                 />
             </CardContent>

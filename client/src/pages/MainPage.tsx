@@ -62,12 +62,12 @@ export const MainPage: React.FC = () => {
                 [classes.drawerClose]: !open,
             })} maxWidth={false}
             >
-                {!videos && loading && <LinearProgress/>}
+                {loading && <LinearProgress/>}
 
-                {videos && videos.map((video, index)=>
+                {videos && videos.map((video: any, index:number)=>
                     <Link key={video.id.videoId} to={`/video/${video.id.videoId}`}>
                         <CardMain
-                            title={video.snippet.channelTitle}
+                            channelTitle={video.snippet.channelTitle}
                             description={video.snippet.title}
                             time={video.snippet.publishTime}
                             img={video.snippet.thumbnails.medium.url}

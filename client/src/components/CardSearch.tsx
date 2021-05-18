@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardHeader from "@material-ui/core/CardHeader";
 import {Avatar} from "@material-ui/core";
-import {red} from "@material-ui/core/colors";
+
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -44,46 +44,79 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: "center",
             paddingBottom: theme.spacing(1),
         },
-        avatar: {
-            backgroundColor: red[500],
-            marginRight: 10,
-        },
         description: {
             width: '80%'
         }
     })
 );
 
-export const CardSearch: React.FC = () => {
+interface ICardSeacrh {
+    img: string,
+    avatar: string,
+    time: string,
+    description: string,
+    title: string,
+    channelTitle: string
+}
+
+export const CardSearch: React.FC<ICardSeacrh> = ({img, avatar, time, description, title, channelTitle}) => {
 
     const classes = useStyles()
+
+    const currentTime: any = new Date();
+    const tookTime: any = new Date(time)
+    const min = Math.floor((Math.abs(tookTime - currentTime) / 1000) / 60);
+    const takeTime = (): string => {
+        if (min > 59) {
+            const hour = Math.floor(min / 60)
+            if (hour > 24) {
+                const day = Math.floor(hour / 24)
+                if (day > 30) {
+                    const month = Math.floor(day / 30)
+                    if (month > 12) {
+                        const years = Math.floor(month / 12)
+                        return `${years} years ago`
+                    } else {
+                        return `${month} months ago`
+                    }
+                } else {
+                    return `${day} days ago`
+                }
+            } else {
+                return `${hour} hours ago`
+            }
+
+        } else {
+            return `${min} minutes ago`
+        }
+    }
 
     return (
 
         <Card className={classes.root}>
             <CardMedia
                 className={classes.cover}
-                image="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
-                title="Live from space album cover"
+                image={img}
+                title={title}
             />
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <CardHeader
-                        title="Shrimp and Chorizo Paella"
-                        subheader="September 14 &bull; 2016"
+                        title={channelTitle}
+                        subheader={takeTime()}
                     />
                     <div className={classes.controls}>
-                        <Avatar aria-label="recipe" className={classes.avatar}>
-                            R
+                        <Avatar aria-label="recipe">
+                            <img
+                                src={avatar}
+                                width='50' height="50" alt=""/>
                         </Avatar>
                         <Typography variant="body2" color="textSecondary" component="span">
-                            Анвар
+                            {channelTitle}
                         </Typography>
                     </div>
                     <Typography variant="body2" noWrap={true} className={classes.description} color="textSecondary"  component="p">
-                        This impressive paella is a perfect party dish and a fun meal to
-                        cook together with your guests. Add 1 cup of frozen peas along with
-                        the mussels, if you like.
+                        {description}
                     </Typography>
                 </CardContent>
             </div>

@@ -1,13 +1,30 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Navbar} from "../components/Navbar";
 import {SideBar} from "../components/Sidebar";
 import clsx from "clsx";
-import {Button, Container, Divider} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
-import {Card, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Typography, Avatar, Badge} from '@material-ui/core';
+import {
+    Card,
+    CardHeader,
+    CardContent,
+    CardActions,
+    Collapse,
+    IconButton,
+    Typography,
+    Avatar,
+    Badge,
+    Button,
+    Container,
+    Divider,
+    LinearProgress
+} from '@material-ui/core';
 import {red} from '@material-ui/core/colors';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
+import {useParams} from "react-router-dom";
+import {getSelectedVideoFetch} from "../store/actions/video";
+import {useActions} from "../hooks/useActions";
+import {useTypedSelector} from "../hooks/useTypedSelector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -18,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
         drawerOpen: {
             marginTop: '100px',
             maxWidth: 1350,
+            marginLeft: '250px',
             transition: theme.transitions.create('margin, max-width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.enteringScreen,
@@ -25,7 +43,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         drawerClose: {
             marginTop: '37px',
-
             maxWidth: 1500,
             transition: theme.transitions.create('margin, max-width', {
                 easing: theme.transitions.easing.sharp,
@@ -41,13 +58,16 @@ const useStyles = makeStyles((theme: Theme) =>
             },
         },
         media: {
-            height: '600px'
+            height: '600px',
+            '& .ytp-expand-pause-overlay .ytp-scroll-min': {
+                display: 'none'
+            }
         },
         subHead: {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            '& .MuiBadge-anchorOriginTopRightRectangle' : {
+            '& .MuiBadge-anchorOriginTopRightRectangle': {
                 top: -5,
             }
         },
@@ -81,6 +101,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const VideoPage: React.FC = () => {
     const classes = useStyles()
+    const {id} = useParams<{ id: string }>()
+    const {getSelectedVideoFetch} = useActions()
+    const {selectVideo, loading, channelData} = useTypedSelector(state => state.video)
     const [open, setOpen] = useState<boolean>(false)
     const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -97,6 +120,40 @@ export const VideoPage: React.FC = () => {
         setOpen(open)
     }
 
+    useEffect(() => {
+        getSelectedVideoFetch(id)
+    }, [])
+
+
+    const takeTime = (time: string) : string => {
+        const currentTime: any = new Date();
+        const tookTime: any = new Date(time)
+        const min = Math.floor((Math.abs(tookTime - currentTime) / 1000) / 60);
+        if (min > 59) {
+            const hour = Math.floor(min / 60)
+            if (hour > 24) {
+                const day = Math.floor(hour / 24)
+                if (day > 30) {
+                    const month = Math.floor(day / 30)
+                    if (month > 12) {
+                        const years = Math.floor(month / 12)
+                        return `${years} years ago`
+                    } else {
+                        return `${month} month ago`
+                    }
+                } else {
+                    return `${day} day ago`
+                }
+            } else {
+                return `${hour} ago`
+            }
+
+        } else {
+            return `${min} minutes ago`
+        }
+    }
+
+
 
     return (
         <>
@@ -108,33 +165,34 @@ export const VideoPage: React.FC = () => {
                 [classes.drawerClose]: !open,
             })} maxWidth={false}
             >
+                {loading && <LinearProgress/>}
+                {Object.keys(selectVideo).length && Object.keys(channelData).length &&
                 <Card className={classes.cardRoot}>
-                    <CardMedia
-                        component="img"
-                        height="100%"
-                        className={classes.media}
-                        src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
-                        title="Paella dish"
+                    <iframe className={classes.media} width="100%" height="100%"
+                            src={`https://www.youtube.com/embed/${id}`}
+                            title="YouTube video player" frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
                     />
+
                     <CardContent>
                         <Typography variant="h5" className={classes.headText} component="p">
-                            This impressive paella is a perfect party dish and a fun meal to cook together with your
-                            guests. Add 1 cup of frozen peas along with the mussels, if you like.
+                            {selectVideo.items[0].snippet.title}
                         </Typography>
                         <div className={classes.subHead}>
                             <Typography variant="body2" color="textSecondary" component="p">
-                                September 14 &bull; 2016
+                                {selectVideo.items[0].statistics.viewCount} просмотров &bull; {takeTime(selectVideo.items[0].snippet.publishedAt)}
                             </Typography>
 
                             <div>
                                 <IconButton aria-label="add to favorites">
-                                    <Badge badgeContent={4}>
+                                    <Badge badgeContent={selectVideo.items[0].statistics.likeCount}>
                                         <ThumbUpAltIcon/>
                                     </Badge>
 
                                 </IconButton>
                                 <IconButton aria-label="share">
-                                    <Badge badgeContent={4}>
+                                    <Badge badgeContent={selectVideo.items[0].statistics.dislikeCount}>
                                         <ThumbDownIcon/>
                                     </Badge>
                                 </IconButton>
@@ -145,11 +203,14 @@ export const VideoPage: React.FC = () => {
                     <CardHeader
                         avatar={
                             <Avatar aria-label="recipe" className={classes.avatar}>
-                                R
+                                <img
+                                    src={channelData.items[0].snippet.thumbnails.default.url}
+                                    width='50' height="50" alt=""
+                                />
                             </Avatar>
                         }
-                        title="Shrimp and Chorizo Paella"
-                        subheader="September 14, 2016"
+                        title={channelData.items[0].snippet.title}
+                        subheader={`${channelData.items[0].statistics.subscriberCount} подписчиков`}
                     />
 
                     <CardActions disableSpacing>
@@ -165,28 +226,8 @@ export const VideoPage: React.FC = () => {
                     </CardActions>
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <CardContent>
-                            <Typography paragraph>Method:</Typography>
-                            <Typography paragraph>
-                                Heat 1/2 cup of the broth in a pot until simmering, add saffron and set aside for 10
-                                minutes.
-                            </Typography>
-                            <Typography paragraph>
-                                Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high
-                                heat. Add chicken, shrimp and chorizo, and cook, stirring occasionally until lightly
-                                browned, 6 to 8 minutes. Transfer shrimp to a large plate and set aside, leaving chicken
-                                and chorizo in the pan. Add pimentón, bay leaves, garlic, tomatoes, onion, salt and
-                                pepper, and cook, stirring often until thickened and fragrant, about 10 minutes. Add
-                                saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
-                            </Typography>
-                            <Typography paragraph>
-                                Add rice and stir very gently to distribute. Top with artichokes and peppers, and cook
-                                without stirring, until most of the liquid is absorbed, 15 to 18 minutes. Reduce heat to
-                                medium-low, add reserved shrimp and mussels, tucking them down into the rice, and cook
-                                again without stirring, until mussels have opened and rice is just tender, 5 to 7
-                                minutes more. (Discard any mussels that don’t open.)
-                            </Typography>
                             <Typography>
-                                Set aside off of the heat to let rest for 10 minutes, and then serve.
+                                {selectVideo.items[0].snippet.description}
                             </Typography>
                             <Button className={classes.expandClose}
                                     onClick={handleExpandClose}
@@ -198,6 +239,8 @@ export const VideoPage: React.FC = () => {
                         </CardContent>
                     </Collapse>
                 </Card>
+                }
+
             </Container>
         </>
     )

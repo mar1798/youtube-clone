@@ -242,8 +242,8 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
     }
 
 
-    const responseGoogle = (response: object) => {
-        console.log(response);
+    const responseGoogle = (response: any) => {
+        console.log(response.tokenId);
     }
 
     useMemo(() => {

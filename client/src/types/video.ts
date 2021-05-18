@@ -3,6 +3,8 @@ export interface videoState {
     videos: Array<any>,
     error: null | string,
     channelImgs: Array<string>,
+    selectVideo: any,
+    channelData: any,
 }
 
 export enum videoActionTypes {
@@ -11,10 +13,18 @@ export enum videoActionTypes {
     GET_VIDEO_ERROR = 'GET_VIDEO_ERROR',
     GET_CHANNEL_IMG = "GET_CHANNEL_IMG",
     DELETE_CHANNEL_IMG = "DELETE_CHANNEL_IMG",
+    GET_SELECTED_VIDEO = "GET_SELECTED_VIDEO",
+    GET_CHANNEL_DATA = "GET_CHANNEL_DATA"
 }
 
 export interface IGetVideoStart {
     type: videoActionTypes.GET_VIDEO_START
+}
+
+
+export interface IGetSelectedVideo {
+    type: videoActionTypes.GET_SELECTED_VIDEO,
+    payload: any
 }
 
 export interface IGetChannelImg {
@@ -36,4 +46,17 @@ export interface IGetVideoError {
     payload: string
 }
 
-export type VideoAction = IGetVideoError | IGetVideoStart | IGetVideoSuccess | IGetChannelImg | IDeleteChannelImg
+
+export interface IGetChannelData {
+    type: videoActionTypes.GET_CHANNEL_DATA,
+    payload: any
+}
+
+export type VideoAction =
+    IGetVideoError |
+    IGetVideoStart |
+    IGetVideoSuccess |
+    IGetChannelImg |
+    IDeleteChannelImg |
+    IGetSelectedVideo |
+    IGetChannelData
