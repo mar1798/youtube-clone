@@ -1,14 +1,14 @@
 import React from "react";
 import {makeStyles, Theme, createStyles} from "@material-ui/core/styles";
 import {Card, CardHeader, CardMedia, CardContent, Avatar, Typography} from "@material-ui/core";
+import {useTime} from "../hooks/useTime";
 
 
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            width: '100%',
-            margin: '20px',
+            marginTop: 20,
             backgroundColor: theme.palette.background.default,
             '&.MuiPaper-elevation1': {
                 boxShadow: 'none'
@@ -39,33 +39,7 @@ interface ICardMain {
 export const CardMain: React.FC<ICardMain> = ({channelTitle, description, time, img, avatar}) => {
 
     const classes = useStyles();
-    const currentTime: any = new Date();
-    const tookTime: any = new Date(time)
-    const min = Math.floor((Math.abs(tookTime - currentTime) / 1000) / 60);
-    const takeTime = (): string => {
-        if (min > 59) {
-            const hour = Math.floor(min / 60)
-            if (hour > 24) {
-                const day = Math.floor(hour / 24)
-                if (day > 30) {
-                    const month = Math.floor(day / 30)
-                    if (month > 12) {
-                        const years = Math.floor(month / 12)
-                        return `${years} years ago`
-                    } else {
-                        return `${month} month ago`
-                    }
-                } else {
-                    return `${day} day ago`
-                }
-            } else {
-                return `${hour} ago`
-            }
-
-        } else {
-            return `${min} minutes ago`
-        }
-    }
+    const {takeTime} = useTime()
 
 
     return (
@@ -87,7 +61,7 @@ export const CardMain: React.FC<ICardMain> = ({channelTitle, description, time, 
                         </Avatar>
                     }
                     title={channelTitle}
-                    subheader={takeTime()}
+                    subheader={takeTime(time)}
                 />
             </CardContent>
         </Card>

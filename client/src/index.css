@@ -1,9 +1,16 @@
+
+
+
 *{
   text-decoration: none;
 }
 
 #player .ytp-expand-pause-overlay .ytp-scroll-min .ytp-expand-pause-overlay {
   display: none;
+}
+
+.html5-video-player:not(.ytp-big-mode) {
+  opacity: 0;
 }
 
 body {

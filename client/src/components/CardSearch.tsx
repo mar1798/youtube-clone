@@ -6,6 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardHeader from "@material-ui/core/CardHeader";
 import {Avatar} from "@material-ui/core";
+import {useTime} from "../hooks/useTime";
 
 
 
@@ -45,7 +46,10 @@ const useStyles = makeStyles((theme: Theme) =>
             paddingBottom: theme.spacing(1),
         },
         description: {
-            width: '80%'
+            width: '700px'
+        },
+        avatar: {
+            marginRight: '10px'
         }
     })
 );
@@ -62,34 +66,8 @@ interface ICardSeacrh {
 export const CardSearch: React.FC<ICardSeacrh> = ({img, avatar, time, description, title, channelTitle}) => {
 
     const classes = useStyles()
+    const {takeTime} = useTime()
 
-    const currentTime: any = new Date();
-    const tookTime: any = new Date(time)
-    const min = Math.floor((Math.abs(tookTime - currentTime) / 1000) / 60);
-    const takeTime = (): string => {
-        if (min > 59) {
-            const hour = Math.floor(min / 60)
-            if (hour > 24) {
-                const day = Math.floor(hour / 24)
-                if (day > 30) {
-                    const month = Math.floor(day / 30)
-                    if (month > 12) {
-                        const years = Math.floor(month / 12)
-                        return `${years} years ago`
-                    } else {
-                        return `${month} months ago`
-                    }
-                } else {
-                    return `${day} days ago`
-                }
-            } else {
-                return `${hour} hours ago`
-            }
-
-        } else {
-            return `${min} minutes ago`
-        }
-    }
 
     return (
 
@@ -103,10 +81,10 @@ export const CardSearch: React.FC<ICardSeacrh> = ({img, avatar, time, descriptio
                 <CardContent className={classes.content}>
                     <CardHeader
                         title={channelTitle}
-                        subheader={takeTime()}
+                        subheader={takeTime(time)}
                     />
                     <div className={classes.controls}>
-                        <Avatar aria-label="recipe">
+                        <Avatar aria-label="recipe" className={classes.avatar}>
                             <img
                                 src={avatar}
                                 width='50' height="50" alt=""/>

@@ -22,15 +22,13 @@ export const getVideoFetch = (search:null | string = null) => async (dispatch:Di
             const videoResponse = await axios.get(`${url.search}&q=${search}`)
             await dispatch(getVideoSuccess(videoResponse.data.items))
         } else {
-            const videoResponse = await axios.get(`${url.search}&reqionCode=RU$chart=mostPopular`)
+            const videoResponse = await axios.get(`${url.videos}`)
             await dispatch(getVideoSuccess(videoResponse.data.items))
         }
         try {
             const videos = getState().video.videos
             videos.map(async (item: any) =>{
                 const channelImgResponse = await axios.get(`${url.channel}&id=${item.snippet.channelId}`)
-                // console.log(item.snippet.channelId)
-                // console.log(channelImgResponse.data.items[0].snippet.thumbnails.default.url)
                 await dispatch(getChannelImg(channelImgResponse.data.items[0].snippet.thumbnails.default.url))
             })
         } catch (e) {
@@ -39,6 +37,7 @@ export const getVideoFetch = (search:null | string = null) => async (dispatch:Di
         }
 
     } catch (e) {
+        console.log(e)
         dispatch(getVideoError(e.response.data.error.message))
     }
 }

@@ -1,6 +1,9 @@
-import React, {SyntheticEvent, useMemo, useState} from 'react'
+import React, {SyntheticEvent, useMemo, useRef, useState} from 'react'
 import {GoogleLogin} from 'react-google-login';
 import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
+import Keyboard from "react-simple-keyboard";
+import "react-simple-keyboard/build/css/index.css";
+import clsx from "clsx";
 
 import {
     Button,
@@ -15,9 +18,8 @@ import {
     IconButton,
     Typography,
 } from "@material-ui/core";
-import {fade, makeStyles, Theme, createStyles} from '@material-ui/core/styles';
+import {makeStyles, Theme, createStyles} from '@material-ui/core/styles';
 
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -35,9 +37,6 @@ import {useHistory} from "react-router-dom";
 import {useTypedSelector} from "../hooks/useTypedSelector";
 
 
-interface NavbarProps {
-    onSideBarOpen(sideOpen: boolean): void
-}
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,36 +46,34 @@ const useStyles = makeStyles((theme: Theme) =>
             zIndex: 2,
             flexGrow: 1,
             opacity: 0.95,
+            paddingLeft: '50px',
             '& .MuiPaper-elevation4': {
                 boxShadow: 'none'
             }
         },
 
-        menuButton: {
-            marginRight: theme.spacing(2),
-        },
         title: {
-            display: 'none',
-            [theme.breakpoints.up('sm')]: {
-                display: 'block',
-                letterSpacing: '1px'
-            },
+            // display: 'none',
+            // [theme.breakpoints.up('sm')]: {
+            //     display: 'block',
+            //     letterSpacing: '1px'
+            // },
 
         },
-        search: {
-            position: 'relative',
-            borderRadius: theme.shape.borderRadius,
-            backgroundColor: fade(theme.palette.common.white, 0.15),
-            '&:hover': {
-                backgroundColor: fade(theme.palette.common.white, 0.25),
-            },
-            marginRight: theme.spacing(2),
-            marginLeft: 0,
-            width: '100%',
-            [theme.breakpoints.up('lg')]: {
-                marginLeft: theme.spacing(3),
-                width: 'auto',
-            },
+        videos: {
+            // position: 'relative',
+            // borderRadius: theme.shape.borderRadius,
+            // backgroundColor: fade(theme.palette.common.white, 0.15),
+            // '&:hover': {
+            //     backgroundColor: fade(theme.palette.common.white, 0.25),
+            // },
+            // marginRight: theme.spacing(2),
+            // marginLeft: 0,
+            // width: '100%',
+            // [theme.breakpoints.up('lg')]: {
+            //     marginLeft: theme.spacing(3),
+            //     width: 'auto',
+            // },
         },
         searchIcon: {
             padding: theme.spacing(0, 2),
@@ -91,14 +88,14 @@ const useStyles = makeStyles((theme: Theme) =>
             color: 'inherit',
         },
         inputInput: {
-            padding: theme.spacing(1, 1, 1, 0),
-            // vertical padding + font size from searchIcon
-            paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-            transition: theme.transitions.create('width'),
-            width: '100%',
-            [theme.breakpoints.up('md')]: {
-                width: '20ch',
-            },
+            // padding: theme.spacing(1, 1, 1, 0),
+            // // vertical padding + font size from searchIcon
+            // paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+            // transition: theme.transitions.create('width'),
+            // width: '100%',
+            // [theme.breakpoints.up('md')]: {
+            //     width: '20ch',
+            // },
         },
         sectionDesktop: {
             display: 'none',
@@ -188,7 +185,19 @@ const useStyles = makeStyles((theme: Theme) =>
         logo: {
             display: 'flex',
             alignItems: 'center',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            marginLeft: 60,
+        },
+        keyboard: {
+            position: 'fixed',
+            right: '20px',
+            bottom: '-38%',
+            width: 600,
+            height: 600,
+            color: '#000'
+        },
+        keyboardClose: {
+            display: 'none'
         }
     })
 );
@@ -204,7 +213,7 @@ const optionsCurrentTheme = [
 ];
 
 
-export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
+export const Navbar: React.FC = () => {
 
     const history = useHistory()
     const {theme, language} = useTypedSelector(state => state.auth)
@@ -212,14 +221,31 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
     const classes = useStyles();
     const {transcript} = useSpeechRecognition()
 
+    const keyboard = useRef();
 
     const [search, setSearch] = useState<string>('')
-    const [sideBarOpen, setSideBarOpen] = useState<boolean>(false);
-
+    const [keyboardOpen, setKeyboardOpen] = useState<boolean>(true)
+    const [layout, setLayout] = useState<string>("default");
     const [anchorElView, setAnchorElView] = useState<null | HTMLElement>(null);
     const [anchorElSettings, setAnchorElSettings] = useState<null | HTMLElement>(null);
     const [anchorCurrentTheme, setAnchorCurrentTheme] = useState<null | HTMLElement>(null);
     const [anchorLanguage, setAnchorLanguage] = useState<null | HTMLElement>(null);
+
+    const onChange = (input: string) => {
+        setSearch(input);
+    };
+
+    const handleShift = () => {
+        const newLayoutName = layout === "default" ? "shift" : "default";
+        setLayout(newLayoutName);
+    };
+
+    const onKeyPress = (button: string) => {
+        if (button === "{shift}" || button === "{lock}") handleShift();
+        if(button === "{enter}" && search.length > 0) {
+            history.push(`/search/${search}`)
+        }
+    };
 
 
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,7 +264,12 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
 
     const submitHandler = (e: SyntheticEvent) => {
         e.preventDefault();
-        history.push(`/search/${search}`)
+
+        search && history.push(`/search/${search}`)
+    }
+
+    const onMicOnHandler = async () => {
+        await SpeechRecognition.startListening()
     }
 
 
@@ -248,14 +279,10 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
 
     useMemo(() => {
         setSearch(transcript)
-    }, [transcript])
-    useMemo(() => {
-        onSideBarOpen(sideBarOpen)
-    }, [sideBarOpen, onSideBarOpen])
 
-    const sideBarOpenHandler = () => {
-        setSideBarOpen(!sideBarOpen)
-    }
+    }, [transcript])
+
+
 
     const viewMenu = (
         <StyledMenu
@@ -306,6 +333,20 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
             </StyledMenuItem>
         </StyledMenu>
     );
+
+
+    const screenKeyboard = (
+        <div className={clsx(classes.keyboard, {
+            [classes.keyboardClose] : keyboardOpen
+        })}>
+            <Keyboard
+                keyboardRef={(r: any) => (keyboard.current = r)}
+                layoutName={layout}
+                onChange={onChange}
+                onKeyPress={onKeyPress}
+            />
+        </div>
+    )
 
 
     const settingsMenu = (
@@ -371,16 +412,7 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
         <div className={classes.grow}>
             <AppBar position="fixed" color="inherit">
                 <Toolbar>
-                    <IconButton
-                        edge="start"
-                        className={classes.menuButton}
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={sideBarOpenHandler}
-                    >
-                        <MenuIcon/>
-                    </IconButton>
-                    <div className={classes.logo} onClick={()=>history.push('/')}>
+                    <div className={classes.logo} onClick={() => history.push('/')}>
                         <YouTubeIcon fontSize="large" className={classes.youtubeIcon}/>
                         <Typography className={classes.title} variant="h6" noWrap>
                             YouTube
@@ -395,7 +427,7 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
                             value={search}
 
                         />
-                        <IconButton className={classes.iconButton} aria-label="keyboard">
+                        <IconButton className={classes.iconButton} aria-label="keyboard" onClick={() => setKeyboardOpen(!keyboardOpen)}>
                             <KeyboardIcon/>
                         </IconButton>
                         <Divider className={classes.divider} orientation="vertical"/>
@@ -417,7 +449,7 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
                         title={<span className={classes.tooltip}>Голосовой поиск</span>}
                         aria-label="mic">
                         <IconButton
-                            onClick={() => SpeechRecognition.startListening()}
+                            onClick={onMicOnHandler}
                             className={classes.iconButtonMic}
                             aria-label="mic"
                         >
@@ -477,6 +509,7 @@ export const Navbar: React.FC<NavbarProps> = ({onSideBarOpen}) => {
 
             {viewMenu}
             {settingsMenu}
+            {screenKeyboard}
 
         </div>
     );
