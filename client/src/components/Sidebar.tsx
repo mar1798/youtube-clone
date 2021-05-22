@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom'
 import clsx from 'clsx';
 import {Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
@@ -7,35 +7,39 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
 import RestoreIcon from '@material-ui/icons/Restore';
 import MenuIcon from "@material-ui/icons/Menu";
+import * as path from "path";
 
 
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         drawer: {
-
         },
         drawerOpen: {
             width: 240,
             marginTop: 63,
-            paddingLeft:8,
-            border: 'none'
+            border: 'none',
         },
         drawerClose: {
             marginTop: 63,
-            width: theme.spacing(9) + 1,
+            width: theme.spacing(7) + 1,
             border: 'none',
-            paddingLeft:8,
         },
         listItem: {
-            cursor: 'pointer'
+            cursor: 'pointer',
+            "&:hover" : {
+                backgroundColor: '#bbb'
+            }
         },
         menuButton: {
             position: 'fixed',
             top: 8,
-            left: 23,
+            left: 16,
             zIndex:3,
         },
+        active: {
+            color: 'red'
+        }
     }),
 );
 
@@ -46,8 +50,6 @@ export const SideBar: React.FC = () => {
     const history = useHistory();
     const classes = useStyles();
     const [open,setOpen] = useState<boolean>(false)
-
-
 
     return (
         <>
@@ -76,18 +78,22 @@ export const SideBar: React.FC = () => {
 
                 <List>
                     <ListItem onClick={()=>history.push('/')} className={classes.listItem}>
-                        <ListItemIcon>
-                            <HomeIcon/>
+                        <ListItemIcon >
+                            <HomeIcon className={clsx({[classes.active]: history.location.pathname === '/' })}/>
                         </ListItemIcon>
                         <ListItemText primary={'Главная'}/>
                     </ListItem>
                     <ListItem onClick={()=>history.push('/categories')} className={classes.listItem}>
-                        <ListItemIcon><ExploreIcon/></ListItemIcon>
+                        <ListItemIcon>
+                            <ExploreIcon className={clsx({[classes.active]: history.location.pathname === '/categories' && '/category/:id' })}/>
+                        </ListItemIcon>
                         <ListItemText primary={'Навигатор'}/>
                     </ListItem>
 
                     <ListItem onClick={()=>history.push('/history')} className={classes.listItem}>
-                        <ListItemIcon><RestoreIcon/></ListItemIcon>
+                        <ListItemIcon>
+                            <RestoreIcon className={clsx({[classes.active]: history.location.pathname === '/history' })}/>
+                        </ListItemIcon>
                         <ListItemText primary={'История'}/>
                     </ListItem>
 

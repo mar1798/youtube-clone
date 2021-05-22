@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
             gridGap: '20px',
             gridTemplateColumns: '1fr 1fr 1fr 1fr',
             width: '90%',
+            paddingTop: 20,
 
         }
     }),
@@ -43,8 +44,8 @@ export const MainPage: React.FC = () => {
             >
 
 
-                {videos && videos.map((video: any, index:number)=>
-                    <Link key={video.id} to={`/video/${video.id}`}>
+                {videos.length > 0 && videos.map((video: any, index:number)=>
+                    <Link key={index} to={`/video/${video.id}`}>
                         <CardMain
                             channelTitle={video.snippet.channelTitle}
                             description={video.snippet.title}

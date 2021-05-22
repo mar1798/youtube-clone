@@ -72,15 +72,15 @@ export const CategoriesPage: React.FC = () => {
         <Container maxWidth={"lg"}>
             <div className={classes.root}>
             {categories.map(item =>
-                <Link key={item.id} to={`/category/${item.id}`}>
+                <Link key={item.id} to={`/category/${item.id}/${item.text}`}>
                     <CardCategory img={item.img} text={item.text} />
                 </Link>
             )}
             </div>
-            {loading && <LinearProgress />}
+            {loading && <LinearProgress color='secondary'/>}
             <Divider className={classes.divider}/>
             <Typography variant="h6" className={classes.text}>Популярные видео</Typography>
-            {Object.keys(videos).length && videos.map((video: any, index: number) =>
+            {videos.length > 0 && videos.map((video: any, index: number) =>
                 <Link key={video.id} to={`/video/${video.id}`}>
                     <CardSearch
                         channelTitle={video.snippet.channelTitle}

@@ -14,30 +14,46 @@ import axios from "axios";
 import {url} from "../../urls";
 
 
-export const getVideoFetch = (search:null | string = null) => async (dispatch:Dispatch<VideoAction>, getState: any) => {
+export const getVideoFetch = (search: null | string = null, id: null | string = null) => async (dispatch: Dispatch<VideoAction>, getState: any) => {
     try {
         dispatch(getVideoStart())
         dispatch(deleteChannelImg())
-        if(search) {
-            const videoResponse = await axios.get(`${url.search}&q=${search}`)
-            await dispatch(getVideoSuccess(videoResponse.data.items))
+        if (search) {
+            try {
+                const videoResponse = await axios.get(`${url.search}&q=${search}`)
+                await dispatch(getVideoSuccess(videoResponse.data.items))
+            } catch (e) {
+                dispatch(getVideoError(e.response.data.error.message))
+            }
         } else {
-            const videoResponse = await axios.get(`${url.videos}`)
-            await dispatch(getVideoSuccess(videoResponse.data.items))
+            if (id) {
+                try {
+                    const videoResponse = await axios.get(`${url.videos}&videoCategoryId=${id}`)
+                    await dispatch(getVideoSuccess(videoResponse.data.items))
+                } catch (e) {
+                    dispatch(getVideoError(e.response.data.error.message))
+                }
+
+            } else {
+                try {
+                    const videoResponse = await axios.get(`${url.videos}`)
+                    await dispatch(getVideoSuccess(videoResponse.data.items))
+                } catch (e) {
+                    dispatch(getVideoError(e.response.data.error.message))
+                }
+            }
         }
         try {
             const videos = getState().video.videos
-            videos.map(async (item: any) =>{
+            videos.map(async (item: any) => {
                 const channelImgResponse = await axios.get(`${url.channel}&id=${item.snippet.channelId}`)
                 await dispatch(getChannelImg(channelImgResponse.data.items[0].snippet.thumbnails.default.url))
             })
         } catch (e) {
-            console.log(e.response)
             dispatch(getVideoError(e.response.data.error.message))
         }
 
     } catch (e) {
-        console.log(e)
         dispatch(getVideoError(e.response.data.error.message))
     }
 }
@@ -56,7 +72,7 @@ export const getSelectedVideoFetch = (id: string) => async (dispatch: Dispatch<V
 }
 
 
-const getVideoStart = ():IGetVideoStart => ({
+const getVideoStart = (): IGetVideoStart => ({
     type: videoActionTypes.GET_VIDEO_START
 })
 
@@ -65,17 +81,17 @@ const getVideoSuccess = (payload: []): IGetVideoSuccess => ({
     payload,
 })
 
-const getVideoError = (e : string): IGetVideoError => ({
+const getVideoError = (e: string): IGetVideoError => ({
     type: videoActionTypes.GET_VIDEO_ERROR,
     payload: e
 })
 
-const getChannelImg = (payload: string):IGetChannelImg => ({
+const getChannelImg = (payload: string): IGetChannelImg => ({
     type: videoActionTypes.GET_CHANNEL_IMG,
     payload
 })
 
-const deleteChannelImg = ():IDeleteChannelImg => ({
+const deleteChannelImg = (): IDeleteChannelImg => ({
     type: videoActionTypes.DELETE_CHANNEL_IMG
 })
 

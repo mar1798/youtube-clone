@@ -155,15 +155,6 @@ const useStyles = makeStyles((theme: Theme) =>
         icon_sign: {
             marginRight: 10
         },
-        google: {
-            position: 'absolute',
-            top: 15,
-            right: 33,
-            height: 36,
-            width: 104,
-            opacity: 1,
-            zIndex: 3
-        },
         link: {
             textDecoration: 'none',
             color: 'inherit',
@@ -499,7 +490,6 @@ export const Navbar: React.FC = () => {
                             onSuccess={responseGoogle}
                             onFailure={responseGoogle}
                             cookiePolicy={'single_host_origin'}
-                            className={classes.google}
                         />
 
 

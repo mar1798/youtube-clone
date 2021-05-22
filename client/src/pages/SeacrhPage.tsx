@@ -18,7 +18,7 @@ export const SearchPage: React.FC = () => {
 
 
     useEffect(()=>{
-        getVideoFetch(id)
+        getVideoFetch(id, null)
     }, [])
 
 
@@ -26,9 +26,8 @@ export const SearchPage: React.FC = () => {
         <>
             {loading && <LinearProgress color="secondary"/>}
 
-            <Container  maxWidth={"lg"}
-            >
-                {videos && videos.map((video: any, index:number) =>
+            <Container  maxWidth={"lg"}  style={{paddingTop: '20px'}}>
+                {videos.length > 0 && videos.map((video: any, index:number) =>
                     <Link key={video.id.videoId} to={`/video/${video.id.videoId}`}>
                     <CardSearch
                         channelTitle={video.snippet.channelTitle}

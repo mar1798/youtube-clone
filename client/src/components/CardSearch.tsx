@@ -13,7 +13,6 @@ import {useTime} from "../hooks/useTime";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            marginTop: '20px',
             display: "flex",
             backgroundColor: theme.palette.background.default,
             '&.MuiPaper-elevation1':{

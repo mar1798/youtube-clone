@@ -6,7 +6,7 @@ const initialState: videoState = {
     error: null,
     channelImgs: [],
     selectVideo: {},
-    channelData: {}
+    channelData: {},
 }
 
 export const videoReducer = (state = initialState, action: VideoAction):videoState => {

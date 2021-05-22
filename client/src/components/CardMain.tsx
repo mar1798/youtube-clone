@@ -8,7 +8,6 @@ import {useTime} from "../hooks/useTime";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            marginTop: 20,
             backgroundColor: theme.palette.background.default,
             '&.MuiPaper-elevation1': {
                 boxShadow: 'none'
