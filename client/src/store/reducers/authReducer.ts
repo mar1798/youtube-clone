@@ -7,7 +7,10 @@ const initialState: authState = {
     id: null,
     token: null,
     theme: 0,
-    language: 0,
+    language: {
+        index: 0,
+        lan: 'ru',
+    },
 }
 
 
@@ -24,7 +27,7 @@ export const authReducer = (state = initialState, action: authAction): authState
         case authActionTypes.CHANGE_THEME:
             return {...state, theme: action.payload}
         case authActionTypes.CHANGE_LANGUAGE:
-            return {...state, language: action.payload}
+            return {...state, language: {index: action.payload.index, lan: action.payload.lan}}
         default:
             return {...state}
     }

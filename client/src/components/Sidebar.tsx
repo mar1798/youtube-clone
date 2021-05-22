@@ -7,8 +7,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExploreIcon from '@material-ui/icons/Explore';
 import RestoreIcon from '@material-ui/icons/Restore';
 import MenuIcon from "@material-ui/icons/Menu";
-import * as path from "path";
-
+import {useTranslation} from "react-i18next";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -50,6 +49,7 @@ export const SideBar: React.FC = () => {
     const history = useHistory();
     const classes = useStyles();
     const [open,setOpen] = useState<boolean>(false)
+    const {t} = useTranslation()
 
     return (
         <>
@@ -81,20 +81,20 @@ export const SideBar: React.FC = () => {
                         <ListItemIcon >
                             <HomeIcon className={clsx({[classes.active]: history.location.pathname === '/' })}/>
                         </ListItemIcon>
-                        <ListItemText primary={'Главная'}/>
+                        <ListItemText primary={t('home')}/>
                     </ListItem>
                     <ListItem onClick={()=>history.push('/categories')} className={classes.listItem}>
                         <ListItemIcon>
                             <ExploreIcon className={clsx({[classes.active]: history.location.pathname === '/categories' && '/category/:id' })}/>
                         </ListItemIcon>
-                        <ListItemText primary={'Навигатор'}/>
+                        <ListItemText primary={t('explore')}/>
                     </ListItem>
 
                     <ListItem onClick={()=>history.push('/history')} className={classes.listItem}>
                         <ListItemIcon>
                             <RestoreIcon className={clsx({[classes.active]: history.location.pathname === '/history' })}/>
                         </ListItemIcon>
-                        <ListItemText primary={'История'}/>
+                        <ListItemText primary={t('history')}/>
                     </ListItem>
 
 

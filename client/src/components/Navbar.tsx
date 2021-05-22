@@ -3,6 +3,8 @@ import {GoogleLogin} from 'react-google-login';
 import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
+// import layout from "simple-keyboard-layouts/build/layouts/russian"
+import '../i18n'
 import clsx from "clsx";
 
 import {
@@ -35,8 +37,8 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import {useActions} from "../hooks/useActions";
 import {useHistory} from "react-router-dom";
 import {useTypedSelector} from "../hooks/useTypedSelector";
-
-
+import i18n from "i18next";
+import {useTranslation} from "react-i18next";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -193,16 +195,6 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const optionsLanguage = [
-    'Русский',
-    'Английский'
-];
-
-const optionsCurrentTheme = [
-    'Темная',
-    'Светлая',
-];
-
 
 export const Navbar: React.FC = () => {
 
@@ -211,6 +203,7 @@ export const Navbar: React.FC = () => {
     const {changeTheme, changeLanguage} = useActions()
     const classes = useStyles();
     const {transcript} = useSpeechRecognition()
+    const {t} = useTranslation();
 
     const keyboard = useRef();
 
@@ -233,7 +226,7 @@ export const Navbar: React.FC = () => {
 
     const onKeyPress = (button: string) => {
         if (button === "{shift}" || button === "{lock}") handleShift();
-        if(button === "{enter}" && search.length > 0) {
+        if (button === "{enter}" && search.length > 0) {
             history.push(`/search/${search}`)
         }
     };
@@ -242,13 +235,13 @@ export const Navbar: React.FC = () => {
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value)
     }
-    const handleMenuCurrentThemeClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
+    const handleMenuCurrentThemeClick = (index: number) => {
         changeTheme(index)
         setAnchorCurrentTheme(null);
     };
 
-    const handleMenuLanguageClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
-        changeLanguage(index)
+    const handleMenuLanguageClick = (index: number) => {
+        index === 1 ? changeLanguage({index, lan: 'en'}) : changeLanguage({index, lan: 'ru'})
         setAnchorLanguage(null);
     };
 
@@ -273,6 +266,20 @@ export const Navbar: React.FC = () => {
 
     }, [transcript])
 
+    useMemo(() => {
+        i18n.changeLanguage(language.lan)
+    }, [language.lan])
+
+
+    const optionsLanguage = [
+        t("russian"),
+        t("english")
+    ];
+
+    const optionsCurrentTheme = [
+        t('dark'),
+        t('light')
+    ];
 
 
     const viewMenu = (
@@ -306,7 +313,7 @@ export const Navbar: React.FC = () => {
                     <ListItemIcon>
                         <YouTubeIcon className={classes.youtubeIcon} fontSize="small"/>
                     </ListItemIcon>
-                    <ListItemText primary="Академия для авторов"/>
+                    <ListItemText primary={t("creator_academy")}/>
                 </a>
             </StyledMenuItem>
             <StyledMenuItem>
@@ -319,7 +326,7 @@ export const Navbar: React.FC = () => {
                     <ListItemIcon>
                         <YouTubeIcon className={classes.youtubeIcon} fontSize="small"/>
                     </ListItemIcon>
-                    <ListItemText primary="Академия для музыкантов"/>
+                    <ListItemText primary={t('for_artists')}/>
                 </a>
             </StyledMenuItem>
         </StyledMenu>
@@ -328,7 +335,7 @@ export const Navbar: React.FC = () => {
 
     const screenKeyboard = (
         <div className={clsx(classes.keyboard, {
-            [classes.keyboardClose] : keyboardOpen
+            [classes.keyboardClose]: keyboardOpen
         })}>
             <Keyboard
                 keyboardRef={(r: any) => (keyboard.current = r)}
@@ -341,6 +348,7 @@ export const Navbar: React.FC = () => {
 
 
     const settingsMenu = (
+
         <StyledMenu
             anchorEl={anchorElSettings}
             keepMounted
@@ -352,7 +360,7 @@ export const Navbar: React.FC = () => {
                 <ListItemIcon>
                     <Brightness4Icon fontSize="small"/>
                 </ListItemIcon>
-                <Typography>Тема: {theme ? 'Светлая' : 'Темная'}</Typography>
+                <Typography>{t('theme')}: {theme ? t('light') : t('dark')}</Typography>
                 <ArrowForwardIosIcon className={classes.arrowIcon}/>
             </StyledMenuItem>
             <StyledMenu
@@ -366,7 +374,7 @@ export const Navbar: React.FC = () => {
                     <StyledMenuItem
                         key={option}
                         selected={index === theme}
-                        onClick={(event: React.MouseEvent<HTMLElement>) => handleMenuCurrentThemeClick(event, index)}
+                        onClick={() => handleMenuCurrentThemeClick(index)}
                     >
                         {option}
                     </StyledMenuItem>
@@ -376,7 +384,7 @@ export const Navbar: React.FC = () => {
                 <ListItemIcon>
                     <TranslateIcon fontSize="small"/>
                 </ListItemIcon>
-                <Typography>Язык: {language ? 'Английский' : 'Русский'}</Typography>
+                <Typography>{t('language')}: {language.index ? t('english') : t('russian')}</Typography>
                 <ArrowForwardIosIcon className={classes.arrowIcon}/>
             </StyledMenuItem>
             <StyledMenu
@@ -388,8 +396,8 @@ export const Navbar: React.FC = () => {
                 {optionsLanguage.map((option, index) => (
                     <StyledMenuItem
                         key={option}
-                        selected={index === language}
-                        onClick={(event: React.MouseEvent<HTMLElement>) => handleMenuLanguageClick(event, index)}
+                        selected={index === language.index}
+                        onClick={() => handleMenuLanguageClick(index)}
                     >
                         {option}
                     </StyledMenuItem>
@@ -412,18 +420,24 @@ export const Navbar: React.FC = () => {
                     <Paper elevation={0} component="form" className={classes.root}>
                         <InputBase
                             className={classes.input}
-                            placeholder="Введите запрос"
+                            placeholder={t('search')}
                             inputProps={{'aria-label': 'Search field'}}
                             onChange={changeHandler}
                             value={search}
 
                         />
-                        <IconButton className={classes.iconButton} aria-label="keyboard" onClick={() => setKeyboardOpen(!keyboardOpen)}>
+                        <Tooltip
+                            title={<span className={classes.tooltip}>{t('keyboard')}</span>}
+                            aria-label="search"
+                        >
+                        <IconButton className={classes.iconButton} aria-label="keyboard"
+                                    onClick={() => setKeyboardOpen(!keyboardOpen)}>
                             <KeyboardIcon/>
                         </IconButton>
+                        </Tooltip>
                         <Divider className={classes.divider} orientation="vertical"/>
                         <Tooltip
-                            title={<span className={classes.tooltip}>Введите запрос</span>}
+                            title={<span className={classes.tooltip}>{t('search')}</span>}
                             aria-label="search"
                         >
                             <IconButton
@@ -437,7 +451,7 @@ export const Navbar: React.FC = () => {
 
                     </Paper>
                     <Tooltip
-                        title={<span className={classes.tooltip}>Голосовой поиск</span>}
+                        title={<span className={classes.tooltip}>{t('mic')}</span>}
                         aria-label="mic">
                         <IconButton
                             onClick={onMicOnHandler}
@@ -451,7 +465,7 @@ export const Navbar: React.FC = () => {
                     <div className={classes.grow}/>
                     <div className={classes.sectionDesktop}>
                         <Tooltip
-                            title={<span className={classes.tooltip}>Приложения Youtube</span>}
+                            title={<span className={classes.tooltip}>{t('apps')}</span>}
                             aria-label="view"
                         >
                             <IconButton
@@ -464,7 +478,7 @@ export const Navbar: React.FC = () => {
                             </IconButton>
                         </Tooltip>
                         <Tooltip
-                            title={<span className={classes.tooltip}>Настройки</span>}
+                            title={<span className={classes.tooltip}>{t('settings')}</span>}
                             aria-label="settings"
                         >
                             <IconButton
@@ -484,7 +498,7 @@ export const Navbar: React.FC = () => {
                                 <Button onClick={renderProps.onClick} disabled={renderProps.disabled} variant="outlined"
                                         size="medium" className={classes.margin}>
                                     <AccountCircle className={classes.icon_sign}/>
-                                    <span>Войти</span>
+                                    <span>{t('login')}</span>
                                 </Button>
                             )}
                             onSuccess={responseGoogle}

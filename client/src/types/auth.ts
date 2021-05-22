@@ -6,7 +6,10 @@ export interface authState {
     id: null | number;
     token: null |string;
     theme: number;
-    language: number
+    language: {
+        index: number,
+        lan: string
+    }
 }
 
 export enum authActionTypes {
@@ -29,7 +32,10 @@ export interface IChangeTheme {
 
 export interface IChangeLanguage {
     type: authActionTypes.CHANGE_LANGUAGE,
-    payload: number
+    payload: {
+        index: number,
+        lan: string
+    }
 }
 
 

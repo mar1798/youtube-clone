@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {useTranslation} from "react-i18next";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {
     Card,
@@ -79,12 +80,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 export const VideoPage: React.FC = () => {
+    const {t} = useTranslation()
     const classes = useStyles()
     const {id} = useParams<{ id: string }>()
     const {takeTime} = useTime()
     const {takeCount} = useCount()
     const {getSelectedVideoFetch} = useActions()
     const {selectVideo, loading, channelData} = useTypedSelector(state => state.video)
+    const {language} = useTypedSelector(state=>state.auth)
     const [expanded, setExpanded] = useState<boolean>(false);
 
     const handleExpandOpen = () => {
@@ -112,9 +115,9 @@ export const VideoPage: React.FC = () => {
 
                     <iframe
                         className={classes.root}
-                        width="100%" height="700" src={`https://www.youtube-nocookie.com/embed/${id}`}
+                        width="100%" height="700" src={`https://www.youtube-nocookie.com/embed/${id}?hl=${language.lan}`}
                         title="YouTube video player" frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
                         allowFullScreen
                     />
 
@@ -124,7 +127,7 @@ export const VideoPage: React.FC = () => {
                         </Typography>
                         <div className={classes.subHead}>
                             <Typography variant="body2" color="textSecondary" component="p">
-                                {selectVideo.items[0].statistics.viewCount} просмотров &bull; {takeTime(selectVideo.items[0].snippet.publishedAt)}
+                                {selectVideo.items[0].statistics.viewCount} {t('views')} &bull; {takeTime(selectVideo.items[0].snippet.publishedAt)}
                             </Typography>
 
                             <div>
@@ -151,7 +154,7 @@ export const VideoPage: React.FC = () => {
                             </Avatar>
                         }
                         title={channelData.items[0].snippet.title}
-                        subheader={`${takeCount(channelData.items[0].statistics.subscriberCount)} подписчиков`}
+                        subheader={`${takeCount(channelData.items[0].statistics.subscriberCount)} ${t('subscribers')}`}
                     />
 
                     <CardActions disableSpacing>
@@ -161,7 +164,7 @@ export const VideoPage: React.FC = () => {
                                 aria-expanded={expanded}
                                 aria-label="show more" size="small"
                         >
-                            <span>Eще</span>
+                            <span>{t('more')}</span>
                         </Button>
                         }
                     </CardActions>
@@ -175,7 +178,7 @@ export const VideoPage: React.FC = () => {
                                     aria-expanded={expanded}
                                     aria-label="show more" size="small"
                             >
-                                Cвернуть
+                                {t('less')}
                             </Button>
                         </CardContent>
                     </Collapse>

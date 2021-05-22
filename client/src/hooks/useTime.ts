@@ -1,6 +1,8 @@
 import {useCallback} from 'react'
+import {useTranslation} from "react-i18next";
 
 export const useTime = () => {
+    const {t} = useTranslation()
     const takeTime = useCallback((time: string):string=>{
         const currentTime: any = new Date();
         const tookTime: any = new Date(time)
@@ -13,19 +15,19 @@ export const useTime = () => {
                     const month = Math.floor(day / 30)
                     if (month > 12) {
                         const years = Math.floor(month / 12)
-                        return `${years} years ago`
+                        return `${years} ${t('year')} ago`
                     } else {
-                        return `${month} month ago`
+                        return `${month} ${t('month')} ago`
                     }
                 } else {
-                    return `${day} day ago`
+                    return `${day} ${t('day')} ago`
                 }
             } else {
-                return `${hour} hours ago`
+                return `${hour} ${t('hour')} ago`
             }
 
         } else {
-            return `${min} minutes ago`
+            return `${min} ${t('minutes')} ago`
         }
     }, [])
 

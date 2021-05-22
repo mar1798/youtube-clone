@@ -29,7 +29,7 @@ export const changeTheme = (payload: number): IChangeTheme => ({
     payload
 })
 
-export const changeLanguage = (payload: number) : IChangeLanguage => ({
+export const changeLanguage = (payload: {index: number, lan: string}) : IChangeLanguage => ({
     type: authActionTypes.CHANGE_LANGUAGE,
     payload
 })

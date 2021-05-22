@@ -1,4 +1,5 @@
 import React, {useEffect} from "react";
+import {useTranslation} from "react-i18next";
 import {Container, Divider, LinearProgress, Typography} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
@@ -23,41 +24,45 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const categories = [
-    {
-        id: 10,
-        img: 'https://www.youtube.com/img/explore/destinations/icons/music_color_64.png',
-        text: 'Музыка'
-    },
-    {
-        id: 17,
-        img: 'https://www.youtube.com/img/explore/destinations/icons/sports_color_64.png',
-        text: 'Спорт'
-    },
-    {
-        id: 20,
-        img: 'https://www.youtube.com/img/explore/destinations/icons/gaming_color_64.png',
-        text: 'Игры'
-    },
-    {
-        id: 25,
-        img: 'https://www.youtube.com/img/explore/destinations/icons/news_color_64.png',
-        text: 'Новости'
-    },
-    {
-        id: 26,
-        img: 'https://www.youtube.com/img/explore/destinations/icons/fashion_and_beauty_color_64.png',
-        text: 'Мода'
-    },
-    {
-        id: 27,
-        img: 'https://www.youtube.com/img/explore/destinations/icons/learning_color_64.png',
-        text: 'Образование'
-    }
-]
 
 
 export const CategoriesPage: React.FC = () => {
+    const {t} = useTranslation()
+
+    const categories = [
+        {
+            id: 10,
+            img: 'https://www.youtube.com/img/explore/destinations/icons/music_color_64.png',
+            text: t('music')
+        },
+        {
+            id: 17,
+            img: 'https://www.youtube.com/img/explore/destinations/icons/sports_color_64.png',
+            text: t('sport')
+        },
+        {
+            id: 20,
+            img: 'https://www.youtube.com/img/explore/destinations/icons/gaming_color_64.png',
+            text: t('esport')
+        },
+        {
+            id: 25,
+            img: 'https://www.youtube.com/img/explore/destinations/icons/news_color_64.png',
+            text: t('news')
+        },
+        {
+            id: 26,
+            img: 'https://www.youtube.com/img/explore/destinations/icons/fashion_and_beauty_color_64.png',
+            text: t('fashion')
+        },
+        {
+            id: 27,
+            img: 'https://www.youtube.com/img/explore/destinations/icons/learning_color_64.png',
+            text: t('education')
+        }
+    ]
+
+
     const classes = useStyles()
     const {getVideoFetch} = useActions()
     const {loading, videos, channelImgs} = useTypedSelector(state => state.video)

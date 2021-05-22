@@ -5,6 +5,7 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import RestoreIcon from '@material-ui/icons/Restore';
 import {GoogleLogin} from "react-google-login";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import { useTranslation } from 'react-i18next';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -40,6 +41,8 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
+
+
 export const HistoryPage: React.FC = () => {
     const {token} = useTypedSelector(state => state.auth)
     const classes = useStyles()
@@ -47,15 +50,14 @@ export const HistoryPage: React.FC = () => {
     const responseGoogle = (response: any) => {
         console.log(response.tokenId);
     }
-
+    const {t} = useTranslation();
 
     if (!token) {
         return (
             <Container maxWidth="lg" className={classes.noAuth}>
                 <RestoreIcon className={classes.icon}/>
-                <Typography variant="h4" className={classes.text}>История поиска и просмотра недоступна</Typography>
-                <Typography variant="h6" className={classes.text}>Чтобы просмотреть историю поиска войдите в
-                    аккаунт</Typography>
+                <Typography variant="h4" className={classes.text}>{t('history_title')}</Typography>
+                <Typography variant="h6" className={classes.text}>{t('history_sub-title')}</Typography>
                 <GoogleLogin
                     clientId="840988478759-ama8je42nbhvvc44a4uvq1e4gr1urbqa.apps.googleusercontent.com"
                     buttonText="Login"
@@ -63,7 +65,7 @@ export const HistoryPage: React.FC = () => {
                         <Button onClick={renderProps.onClick} disabled={renderProps.disabled} variant="outlined"
                                 size="medium" className={classes.margin} >
                             <AccountCircle  className={classes.icon_sign}/>
-                            <span>Войти</span>
+                            <span>{t('login')}</span>
                         </Button>
                     )}
                     onSuccess={responseGoogle}
